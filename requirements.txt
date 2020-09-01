@@ -1,0 +1,2 @@
+discord
+gpt-2-simple
