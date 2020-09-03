@@ -2,13 +2,15 @@ import discord
 from discord.ext import commands
 import gpt_2_simple as gpt2
 import os
-
+import config
 global convo
-convo = ["<0> We are playing League", "<8> Yes I am Chen","<0> NICE COCK", "<8> FUCK YOU!"]
 
+convo = config.convo
 DISCORD_TOKEN = 'NzQ5NzQ0MTI4ODI0NDQyOTEy.X0wboQ.oNoieSTYTAePGL9x0-K88kmv7Xg'
 bot = commands.Bot(command_prefix='$')
 bot.remove_command('help')
+sess = gpt2.start_tf_sess()
+gpt2.load_gpt2(sess, run_name='run1')
 
 @bot.event
 async def on_ready():
@@ -26,7 +28,7 @@ async def on_message(message):
             brief='hello',
             pass_context = True)
 async def hello(ctx, *args):
-    await ctx.send("Fuck you!")
+    await ctx.send(config.MESSAGE)
 
 @bot.command(name='help', 
             brief='help',
@@ -41,48 +43,55 @@ async def c(ctx, *args):
     print("running AI")
     await ctx.send("Processing.... Please wait 10-20 seconds for a response.", delete_after=5.0)
     global convo
-    a = gpt2.generate(sess,
+    convo_len = len(" ".join(convo)+ f'\n <0> {" ".join(args)} \n <8>')-4
+    messages = gpt2.generate(sess,
                       length=70,
                       temperature=0.7,
                       prefix=" ".join(convo)+ f'\n <0> {" ".join(args)} \n <8>',
-                      nsamples=1,
-                      batch_size=1,
-                      return_as_list=True)[0]
-    convo_len = len(" ".join(convo)+ f'\n <0> {" ".join(args)} \n <8>')-4
-    print(a)
-    print(a[convo_len:])
-    with open("debug.txt","w") as file:
-        file.write(a)
-    print(convo_len)
+                      nsamples=5,
+                      batch_size=5,
+                      return_as_list=True)
+    text_polarity = [TextBlob(text).sentiment.polarity for text in a]
     convo.pop(0)
+    message_options = []
     convo.append("<0> "+" ".join(args))
-    message = ''
-    for i in (a[(convo_len+1):].split('<')[1:]):
-      if i[0:1] == '8':
-        message+= i[2:]
-      else:
-        break
-    convo.append("<8> "+message)
-    print(convo)
-    await ctx.send(message)
+    for message_option in messages:
+        message = ''
+        for i in (a[(convo_len+1):].split('<')[1:]):
+          if i[0:1] == '8':
+            message+= i[2:]
+          else:
+            break
+        message_options.append(message)
+    convo.append("<8> "+sorted(zip(text_polarity,message_options))[0][1])
+    await ctx.send("<8> "+sorted(zip(text_polarity,message_options))[0][1])
 
 @bot.command(name='kys', 
             brief='kys',
             pass_context = True)
 async def kys(ctx, *args):
     if ctx.author.id in [645940845245104130]:
-        await ctx.send("Fuck you!")
+        await ctx.send(config.MESSAGE)
         import sys
         sys.exit()
     else:
-        await ctx.send("No! Fuck you!")
+        await ctx.send(f"No! {config.MESSAGE}")
 
 @bot.command(name='reset', 
             brief='reset',
             pass_context = True)
-async def kys(ctx, *args):
+async def reset(ctx, *args):
     if ctx.author.id in [645940845245104130]:
-        convo = ["<0> We are playing League", "<8> Yes I am Chen","<0> bruh what do you wnat", "<8> to accept the fucking invite","<0> NICE COCK", "<8> FUCK YOU!"]
+        convo = config.convo
     else:
         await ctx.send("No! Reset yourself!")
+
+@bot.command(name='debug', 
+            brief='debug',
+            pass_context = True)
+async def debug(ctx, *args):
+    if ctx.author.id in [645940845245104130]:
+        await ctx.send(" ".join(convo))
+    else:
+        await ctx.send("No!")
 bot.run(DISCORD_TOKEN)
