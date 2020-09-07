@@ -1,2 +1,4 @@
 discord
+tensorflow=1.15
 gpt-2-simple
+textblob
