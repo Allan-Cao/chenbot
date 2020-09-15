@@ -5,7 +5,7 @@
 This bot tries to emulate the way a certain user behaves on discord. The 355M gpt-2 model was retrained to predict the user's next message based on previous messages sent in a group chat. The bot is an interface between the trained gpt-2 model and discord.
 
 ### Installation (but why)
-*Please note that python versions above 3.7 will **not** work due to the lack of support from tensorflow 1.15. It is therefore recommended to run all code in a virtual environment*
+*Please note that python versions above 3.7 will **not** work due to the lack of support from tensorflow 1.15.2. It is therefore recommended to run all code in a virtual environment*
 
 All dependencies are installed through `pip install -r requirements.txt`
 
