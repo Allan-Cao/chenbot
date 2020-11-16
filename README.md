@@ -9,7 +9,8 @@ This bot tries to emulate the way a certain user behaves on discord. The 355M gp
 
 All dependencies are installed through `pip install -r requirements.txt`
 
-The current model being used on my production version of the bot can be downloaded through this [google drive link](https://drive.google.com/file/d/1J8cpxLIL45r96zzaeCXT0I3qK7Lq9ezh/view?usp=sharing). 
+The current model being used on my production version of the bot can be downloaded through this google drive link. 
+Update: Please train your own model. I am currently working on better models.
 
 Training your own model is trivial. Matt Woolf offers [this google collab](https://colab.research.google.com/drive/1qxcQ2A1nNjFudAGN_mcMOnvV9sF_PkEb) to retrain the gpt-2 model on your own data: 
 
